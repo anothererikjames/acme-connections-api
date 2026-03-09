@@ -1,0 +1,6 @@
+{
+  "workspaceName": "Connections API",
+  "domain": "connections",
+  "collections": "postman/collections",
+  "environments": "postman/environments"
+}
