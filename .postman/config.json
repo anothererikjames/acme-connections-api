@@ -1,6 +1,12 @@
 {
-  "workspaceName": "Connections API",
-  "domain": "connections",
-  "collections": "postman/collections",
-  "environments": "postman/environments"
+  "workspace": {
+    "id": "b8c295b0-83c3-4066-9ba6-c4278b7a8479"
+  },
+  "entities": {
+    "collections": [],
+    "environments": [],
+    "specs": [],
+    "flows": [],
+    "globals": []
+  }
 }
