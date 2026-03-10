@@ -1,283 +1,152 @@
 openapi: 3.0.3
 info:
-  title: Acme Connections API
-  version: 2.0.4
-  description: Partner connections, webhook delivery, and event subscriptions.
+  title: Identity API
+  description: User identity, authentication, and role management service
+  version: "1.0.0"
   contact:
-    name: Platform Integrations
-    email: integrations@acme.com
-servers:
-  - url: https://api.acme.com/connections/v2
-    description: Production
-  - url: https://api-staging.acme.com/connections/v2
-    description: Staging
-  - url: https://api-dev.acme.com/connections/v2
-    description: Development
+    name: Platform Team
+    email: platform@example.com
 security:
-  - bearerAuth: []
-  - apiKey: []
-tags:
-  - name: Connections
-  - name: Partners
-  - name: Webhooks
-  - name: Events
-  - name: Subscriptions
-  - name: Credentials
+  - BearerAuth: []
+
+servers:
+  - url: https://identity.api.example.com/v1
+    description: Production
+  - url: https://identity-dev.api.example.com/v1
+    description: Development
+
 paths:
-  /health:
-    get:
-      tags: [Connections]
-      summary: Health check
-      operationId: healthCheck
-      security: []
-      responses:
-        '200': { description: Healthy }
-  /connections:
-    get:
-      tags: [Connections]
-      summary: List connections
-      operationId: listConnections
-      parameters:
-        - { name: status, in: query, schema: { type: string, enum: [active, inactive, pending, error] } }
-        - { name: type, in: query, schema: { type: string } }
-      responses:
-        '200': { description: Connections }
+  /auth/login:
     post:
-      tags: [Connections]
-      summary: Create connection
-      operationId: createConnection
+      operationId: loginUser
+      summary: Authenticate a user and return tokens
+      description: Validates credentials and returns access + refresh tokens
+      tags: [Authentication]
       requestBody:
         required: true
         content:
           application/json:
-            schema: { type: object }
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
       responses:
-        '201': { description: Created }
-  /connections/{connectionId}:
-    get:
-      tags: [Connections]
-      summary: Get connection
-      operationId: getConnection
-      parameters:
-        - { name: connectionId, in: path, required: true, schema: { type: string } }
-      responses:
-        '200': { description: Connection }
-    patch:
-      tags: [Connections]
-      summary: Update connection
-      operationId: updateConnection
-      parameters:
-        - { name: connectionId, in: path, required: true, schema: { type: string } }
+        "200":
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthTokens"
+        "401":
+          description: Invalid credentials
+
+  /auth/refresh:
+    post:
+      operationId: refreshToken
+      summary: Refresh an access token
+      tags: [Authentication]
       requestBody:
+        required: true
         content:
           application/json:
-            schema: { type: object }
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken:
+                  type: string
       responses:
-        '200': { description: Updated }
-    delete:
-      tags: [Connections]
-      summary: Delete connection
-      operationId: deleteConnection
-      parameters:
-        - { name: connectionId, in: path, required: true, schema: { type: string } }
-      responses:
-        '204': { description: Deleted }
-  /connections/{connectionId}/test:
-    post:
-      tags: [Connections]
-      summary: Test connection
-      operationId: testConnection
-      parameters:
-        - { name: connectionId, in: path, required: true, schema: { type: string } }
-      responses:
-        '200': { description: Test result }
-  /partners:
+        "200":
+          description: New tokens issued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthTokens"
+
+  /users:
     get:
-      tags: [Partners]
-      summary: List partners
-      operationId: listPartners
+      operationId: listUsers
+      summary: List all users
+      tags: [Users]
       parameters:
-        - { name: tier, in: query, schema: { type: string, enum: [standard, silver, gold, platinum] } }
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
       responses:
-        '200': { description: Partners }
+        "200":
+          description: List of users
+
     post:
-      tags: [Partners]
-      summary: Register partner
-      operationId: createPartner
+      operationId: createUser
+      summary: Create a new user
+      tags: [Users]
       requestBody:
+        required: true
         content:
           application/json:
-            schema: { type: object }
+            schema:
+              $ref: "#/components/schemas/UserInput"
       responses:
-        '201': { description: Registered }
-  /partners/{partnerId}:
+        "201":
+          description: User created
+
+  /users/{userId}:
     get:
-      tags: [Partners]
-      summary: Get partner
-      operationId: getPartner
+      operationId: getUser
+      summary: Get a user by ID
+      tags: [Users]
       parameters:
-        - { name: partnerId, in: path, required: true, schema: { type: string } }
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
-        '200': { description: Partner }
-    put:
-      tags: [Partners]
-      summary: Update partner
-      operationId: updatePartner
-      parameters:
-        - { name: partnerId, in: path, required: true, schema: { type: string } }
-      requestBody:
-        content:
-          application/json:
-            schema: { type: object }
-      responses:
-        '200': { description: Updated }
-  /webhooks:
-    get:
-      tags: [Webhooks]
-      summary: List webhooks
-      operationId: listWebhooks
-      responses:
-        '200': { description: Webhooks }
-    post:
-      tags: [Webhooks]
-      summary: Register webhook
-      operationId: createWebhook
-      requestBody:
-        content:
-          application/json:
-            schema: { type: object }
-      responses:
-        '201': { description: Registered }
-  /webhooks/{webhookId}:
-    get:
-      tags: [Webhooks]
-      summary: Get webhook
-      operationId: getWebhook
-      parameters:
-        - { name: webhookId, in: path, required: true, schema: { type: string } }
-      responses:
-        '200': { description: Webhook }
-    patch:
-      tags: [Webhooks]
-      summary: Update webhook
-      operationId: updateWebhook
-      parameters:
-        - { name: webhookId, in: path, required: true, schema: { type: string } }
-      requestBody:
-        content:
-          application/json:
-            schema: { type: object }
-      responses:
-        '200': { description: Updated }
-    delete:
-      tags: [Webhooks]
-      summary: Delete webhook
-      operationId: deleteWebhook
-      parameters:
-        - { name: webhookId, in: path, required: true, schema: { type: string } }
-      responses:
-        '204': { description: Deleted }
-  /webhooks/{webhookId}/deliveries:
-    get:
-      tags: [Webhooks]
-      summary: List deliveries
-      operationId: listDeliveries
-      parameters:
-        - { name: webhookId, in: path, required: true, schema: { type: string } }
-        - { name: status, in: query, schema: { type: string, enum: [success, failed, pending] } }
-      responses:
-        '200': { description: Deliveries }
-  /webhooks/{webhookId}/deliveries/{deliveryId}/redeliver:
-    post:
-      tags: [Webhooks]
-      summary: Redeliver event
-      operationId: redeliverWebhook
-      parameters:
-        - { name: webhookId, in: path, required: true, schema: { type: string } }
-        - { name: deliveryId, in: path, required: true, schema: { type: string } }
-      responses:
-        '202': { description: Queued }
-  /events:
-    get:
-      tags: [Events]
-      summary: List events
-      operationId: listEvents
-      parameters:
-        - { name: type, in: query, schema: { type: string } }
-        - { name: since, in: query, schema: { type: string, format: date-time } }
-      responses:
-        '200': { description: Events }
-  /events/{eventId}:
-    get:
-      tags: [Events]
-      summary: Get event
-      operationId: getEvent
-      parameters:
-        - { name: eventId, in: path, required: true, schema: { type: string } }
-      responses:
-        '200': { description: Event }
-  /subscriptions:
-    get:
-      tags: [Subscriptions]
-      summary: List subscriptions
-      operationId: listSubscriptions
-      responses:
-        '200': { description: Subscriptions }
-    post:
-      tags: [Subscriptions]
-      summary: Create subscription
-      operationId: createSubscription
-      requestBody:
-        content:
-          application/json:
-            schema: { type: object }
-      responses:
-        '201': { description: Created }
-  /subscriptions/{subscriptionId}:
-    delete:
-      tags: [Subscriptions]
-      summary: Cancel subscription
-      operationId: cancelSubscription
-      parameters:
-        - { name: subscriptionId, in: path, required: true, schema: { type: string } }
-      responses:
-        '204': { description: Cancelled }
-  /credentials:
-    post:
-      tags: [Credentials]
-      summary: Generate credentials
-      operationId: createCredentials
-      requestBody:
-        content:
-          application/json:
-            schema: { type: object }
-      responses:
-        '201': { description: Created }
-  /credentials/{credentialId}/rotate:
-    post:
-      tags: [Credentials]
-      summary: Rotate credential
-      operationId: rotateCredential
-      parameters:
-        - { name: credentialId, in: path, required: true, schema: { type: string } }
-      responses:
-        '200': { description: Rotated }
-  /credentials/{credentialId}/revoke:
-    post:
-      tags: [Credentials]
-      summary: Revoke credential
-      operationId: revokeCredential
-      parameters:
-        - { name: credentialId, in: path, required: true, schema: { type: string } }
-      responses:
-        '204': { description: Revoked }
+        "200":
+          description: User found
+        "404":
+          description: User not found
+
 components:
   securitySchemes:
-    bearerAuth:
+    BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    apiKey:
-      type: apiKey
-      in: header
-      name: X-Acme-API-Key
+
+  schemas:
+    AuthTokens:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+
+    UserInput:
+      type: object
+      required: [email, name]
+      properties:
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+          enum: [admin, member, viewer]
