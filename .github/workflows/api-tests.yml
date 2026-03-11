@@ -25,3 +25,7 @@ jobs:
           postman collection run 52274286-b33b3d00-fc73-478e-ac21-44bd083b0ece \
             -e 52274286-5585197b-40d3-4a88-83a8-f4863836ce3e \
             --report-events
+
+      - name: Output test results
+        if: always()
+        run: echo "API test run completed"
