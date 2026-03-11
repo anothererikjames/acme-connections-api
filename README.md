@@ -13,3 +13,5 @@ Platform integration layer — partner connections, webhook delivery, event subs
 
 ## Team
 Platform Integrations — `#platform-integrations`
+
+<!-- API monitoring enabled 2026-03-11T20:26:18Z -->
