@@ -1,0 +1,30 @@
+$kind: http-request
+name: POST /webhooks
+url: "{{baseUrl}}/webhooks"
+method: POST
+headers:
+  Authorization: Bearer {{token}}
+  Content-Type: application/json
+body:
+  type: text
+  content: '{"connectionId": "{{connectionId}}", "url":
+    "https://webhook.site/test", "events": ["connection.activated",
+    "connection.error"]}'
+scripts:
+  - type: afterResponse
+    code: >-
+      pm.test('Status is 201', () => pm.response.to.have.status(201));
+
+      pm.test('Webhook has id', () =>
+      pm.expect(pm.response.json()).to.have.property('id'));
+
+      pm.test('Webhook is active', () =>
+      pm.expect(pm.response.json().active).to.be.true);
+
+      pm.test('Events array matches', () => {
+        pm.expect(pm.response.json().events).to.include('connection.activated');
+      });
+
+      pm.collectionVariables.set('webhookId', pm.response.json().id);
+    language: text/javascript
+order: 1000

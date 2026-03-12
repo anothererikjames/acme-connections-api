@@ -1,0 +1,10 @@
+$kind: collection
+description: Complete test suite for the Acme Connections API v2. Covers
+  connections, partners, webhooks, events, subscriptions, and credentials.
+variables:
+  baseUrl: "{{baseUrl}}"
+  token: "{{token}}"
+  connectionId: ""
+  partnerId: ""
+  webhookId: ""
+  credentialId: ""

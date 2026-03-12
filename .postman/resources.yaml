@@ -2,6 +2,16 @@
 workspace:
   id: d90a6a7c-e7e8-47f7-812d-2e9f04b62273
 
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+cloudResources:
+  collections:
+    ../postman/collections/Acme Connections API — Contract Tests: 52274286-b33b3d00-fc73-478e-ac21-44bd083b0ece
+    ../postman/collections/Acme Connections API: 9ea94883-6e38-421d-a5f1-cc0772381eec
+  environments:
+    ../postman/environments/Connections API — Staging.environment.yaml: 52274286-824c58be-57db-4674-9f2c-4534bf64f043
+    ../postman/environments/Connections API — Development.environment.yaml: 52274286-7a0cca71-5c36-4d01-abaf-c061865fdae1
+    ../postman/environments/Connections API — Production.environment.yaml: 52274286-5585197b-40d3-4a88-83a8-f4863836ce3e
+
 # All resources in the `postman/` folder are automatically registered in Local View.
 # Point to additional files outside the `postman/` folder to register them individually. Example:
 #localResources:

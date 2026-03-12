@@ -1,0 +1,15 @@
+$kind: collection
+description: |-
+  Partner connections, webhook delivery, and event subscriptions.
+
+  Contact Support:
+   Name: Platform Integrations
+   Email: integrations@acme.com
+variables:
+  baseUrl: https://api.acme.com/connections/v2
+auth:
+  - id: ""
+    type: bearer
+    name: bearer auth
+    credentials:
+      token: "{{bearerToken}}"

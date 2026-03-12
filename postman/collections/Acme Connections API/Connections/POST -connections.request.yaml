@@ -1,0 +1,28 @@
+$kind: http-request
+name: POST /connections
+url: "{{baseUrl}}/connections"
+method: POST
+headers:
+  Authorization: Bearer {{token}}
+  Content-Type: application/json
+body:
+  type: text
+  content: '{"name": "Test Connection", "type": "api_key", "partnerId":
+    "{{partnerId}}"}'
+scripts:
+  - type: afterResponse
+    code: >-
+      pm.test('Status is 201', () => pm.response.to.have.status(201));
+
+      pm.test('Connection has id', () =>
+      pm.expect(pm.response.json()).to.have.property('id'));
+
+      pm.test('Type is api_key', () =>
+      pm.expect(pm.response.json().type).to.eql('api_key'));
+
+      pm.test('Status is pending or active', () =>
+      pm.expect(pm.response.json().status).to.be.oneOf(['pending','active']));
+
+      pm.collectionVariables.set('connectionId', pm.response.json().id);
+    language: text/javascript
+order: 1000

@@ -1,0 +1,28 @@
+$kind: http-request
+name: POST /partners
+url: "{{baseUrl}}/partners"
+method: POST
+headers:
+  Authorization: Bearer {{token}}
+  Content-Type: application/json
+body:
+  type: text
+  content: '{"name": "Test Partner Inc", "contactEmail": "partner@testco.com",
+    "website": "https://testco.com"}'
+scripts:
+  - type: afterResponse
+    code: >-
+      pm.test('Status is 201', () => pm.response.to.have.status(201));
+
+      pm.test('Partner has id', () =>
+      pm.expect(pm.response.json()).to.have.property('id'));
+
+      pm.test('Partner name matches', () =>
+      pm.expect(pm.response.json().name).to.eql('Test Partner Inc'));
+
+      pm.test('Tier defaults to standard', () =>
+      pm.expect(pm.response.json().tier).to.eql('standard'));
+
+      pm.collectionVariables.set('partnerId', pm.response.json().id);
+    language: text/javascript
+order: 1000
