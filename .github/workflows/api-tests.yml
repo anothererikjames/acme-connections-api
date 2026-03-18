@@ -2,9 +2,7 @@ name: Postman API Tests
 
 on:
   push:
-    branches: [ main, master ]
-  schedule:
-    - cron: '0 */6 * * *'
+    branches: [main, master]
   workflow_dispatch:
 
 jobs:
@@ -12,20 +10,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+      - name: Install json-server
+        run: npm install -g json-server
+      - name: Start mock server
+        run: |
+          json-server --watch db.json --port 3000 &
+          sleep 3
       - name: Install Postman CLI
-        run: |
-          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
-
+        run: curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
       - name: Login to Postman CLI
-        run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
-
+        run: postman login --with-api-key $POSTMAN_API_KEY
+        env:
+          POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
       - name: Run API tests
-        run: |
-          postman collection run 52274286-b33b3d00-fc73-478e-ac21-44bd083b0ece \
-            -e 52274286-5585197b-40d3-4a88-83a8-f4863836ce3e \
-            --report-events
-
-      - name: Output test results
-        if: always()
-        run: echo "API test run completed"
+        run: postman collection run 52274286-fac44692-c5eb-4a9a-af03-0fbdbf9191c7 --env-var "baseUrl=http://localhost:3000"
