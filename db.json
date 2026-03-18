@@ -1,0 +1,27 @@
+{
+  "connections": [
+    {
+      "id": "conn_001",
+      "name": "Salesforce CRM",
+      "type": "oauth2",
+      "status": "active"
+    }
+  ],
+  "webhooks": [
+    {
+      "id": "wh_001",
+      "url": "https://hooks.example.com/notify",
+      "events": [
+        "connection.sync"
+      ]
+    }
+  ],
+  "sync-logs": [
+    {
+      "id": "log_001",
+      "connectionId": "conn_001",
+      "recordsSync": 142,
+      "errors": 0
+    }
+  ]
+}
